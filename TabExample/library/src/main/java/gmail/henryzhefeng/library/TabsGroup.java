@@ -12,6 +12,7 @@ public class TabsGroup extends ViewGroup {
 
     // the bar
     private View mBar;
+    private int currTab = 1;
 
     public TabsGroup(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -19,7 +20,7 @@ public class TabsGroup extends ViewGroup {
         // add the bar
         mBar = new View(context);
         mBar.setBackgroundColor(getResources().getColor(android.R.color.holo_orange_light));
-        LayoutParams params = new LayoutParams(80, 20);
+        LayoutParams params = new LayoutParams(80, 10);
         this.addView(mBar, params);
     }
 
@@ -37,27 +38,30 @@ public class TabsGroup extends ViewGroup {
             // skip the bar
             if (child == mBar) {
                 continue;
-            } else {
-                LayoutParams params = (LayoutParams) child.getLayoutParams();
-                params.x = width;
-                params.y = height;
             }
 
+            LayoutParams params = (LayoutParams) child.getLayoutParams();
+            params.x = width += params.leftMargin;
+            params.y = params.topMargin;
             // update next view's position
-            width += child.getMeasuredWidth();
+            width += child.getMeasuredWidth() + params.rightMargin;
+            int tempHeight = 0;
+            tempHeight = params.topMargin + params.bottomMargin + child.getMeasuredHeight();
+            height = tempHeight > height ? tempHeight : height;
         }
 
         // get whole size of the layout
         width += getPaddingRight();
         height += getPaddingBottom();
-        if (childCnt > 0) {
-            height += getChildAt(childCnt - 1).getMeasuredHeight();
-        }
 
         // set the bar
-        LayoutParams params = (LayoutParams) mBar.getLayoutParams();
-        params.x = 0;
-        params.y = height - mBar.getMeasuredHeight();
+        LayoutParams barParams = (LayoutParams) mBar.getLayoutParams();
+        View tabView = getChildAt(currTab /*the bar itself is the first child*/);
+        LayoutParams tabParams = (LayoutParams) tabView.getLayoutParams();
+        barParams.x = tabParams.x;
+        barParams.y = height;
+        barParams.width = tabView.getMeasuredWidth();
+        height += mBar.getMeasuredHeight();
 
         setMeasuredDimension(resolveSize(width, widthMeasureSpec),
                 resolveSize(height, heightMeasureSpec));
@@ -93,7 +97,10 @@ public class TabsGroup extends ViewGroup {
         return p instanceof LayoutParams;
     }
 
-    public static class LayoutParams extends ViewGroup.LayoutParams {
+    /**
+     * The LayoutParams of TabsGroup
+     */
+    public static class LayoutParams extends MarginLayoutParams {
 
         int x;
         int y;
@@ -109,6 +116,10 @@ public class TabsGroup extends ViewGroup {
         public LayoutParams(ViewGroup.LayoutParams p) {
             super(p);
         }
+    }
+
+    interface ITabsGroup {
+
     }
 }
 
