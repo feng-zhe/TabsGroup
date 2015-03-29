@@ -6,20 +6,43 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.View;
-import android.widget.RelativeLayout;
 
+import gmail.henryzhefeng.library.TabsGroup;
 import gmail.henryzhefeng.tabexample.Fragments.ContentFragment;
 
 public class MainActivity extends FragmentActivity {
+
+    private ViewPager mPager;
+    private TabsGroup mTabs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
+        mPager = (ViewPager) findViewById(R.id.view_pager);
+        mPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
+        mPager.setOnPageChangeListener(new MyPageChangeListener());
+
+        mTabs = (TabsGroup) findViewById(R.id.tabs);
+    }
+
+    private class MyPageChangeListener implements ViewPager.OnPageChangeListener {
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            // ignore now
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            mTabs.setCurrentTab(position + 1);
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+            // ignore now
+        }
     }
 
     private class MyPagerAdapter extends FragmentStatePagerAdapter {

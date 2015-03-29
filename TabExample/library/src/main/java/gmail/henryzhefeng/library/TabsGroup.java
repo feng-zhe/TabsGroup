@@ -1,6 +1,7 @@
 package gmail.henryzhefeng.library;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,14 +14,31 @@ public class TabsGroup extends ViewGroup {
     // the bar
     private View mBar;
     private int currTab = 1;
+    private int tabCnt;
+    private int mHSpacing;
+    private int mBarColor;
+    private int mBarHeight;
 
     public TabsGroup(Context context, AttributeSet attrs) {
         super(context, attrs);
 
+        // read custom attrs
+        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.TabsGroup);
+        try {
+            mHSpacing = array.getDimensionPixelSize(R.styleable.TabsGroup_horizontal_spacing,
+                    getResources().getDimensionPixelSize(R.dimen.default_horizontal_spacing));
+            mBarColor = array.getColor(R.styleable.TabsGroup_bar_color,
+                    getResources().getColor(R.color.default_bar_color));
+            mBarHeight = array.getDimensionPixelSize(R.styleable.TabsGroup_bar_height,
+                    getResources().getDimensionPixelSize(R.dimen.default_bar_height));
+        } finally {
+            array.recycle();
+        }
+
         // add the bar
         mBar = new View(context);
-        mBar.setBackgroundColor(getResources().getColor(android.R.color.holo_orange_light));
-        LayoutParams params = new LayoutParams(80, 10);
+        mBar.setBackgroundColor(mBarColor);
+        LayoutParams params = new LayoutParams(80, mBarHeight);
         this.addView(mBar, params);
     }
 
@@ -30,6 +48,7 @@ public class TabsGroup extends ViewGroup {
         int width = getPaddingLeft();
         int height = getPaddingTop();
         final int childCnt = getChildCount();
+        tabCnt = childCnt - 1;
 
         for (int i = 0; i < childCnt; ++i) {
             View child = getChildAt(i);
@@ -44,7 +63,7 @@ public class TabsGroup extends ViewGroup {
             params.x = width += params.leftMargin;
             params.y = params.topMargin;
             // update next view's position
-            width += child.getMeasuredWidth() + params.rightMargin;
+            width += child.getMeasuredWidth() + params.rightMargin + mHSpacing;
             int tempHeight = 0;
             tempHeight = params.topMargin + params.bottomMargin + child.getMeasuredHeight();
             height = tempHeight > height ? tempHeight : height;
@@ -56,7 +75,7 @@ public class TabsGroup extends ViewGroup {
 
         // set the bar
         LayoutParams barParams = (LayoutParams) mBar.getLayoutParams();
-        View tabView = getChildAt(currTab /*the bar itself is the first child*/);
+        View tabView = getChildAt(currTab);// the bar itself is the first child, so we don't minus 1.
         LayoutParams tabParams = (LayoutParams) tabView.getLayoutParams();
         barParams.x = tabParams.x;
         barParams.y = height;
@@ -98,6 +117,28 @@ public class TabsGroup extends ViewGroup {
     }
 
     /**
+     * Set the current tab index, start from 1.
+     *
+     * @param i the new position
+     * @return the previous position.
+     */
+    public int setCurrentTab(int i) {
+        int old = currTab;
+//        if (i > 0 && i <= tabCnt) {
+//            currTab = i;
+//            requestLayout();
+//        }
+        return old;
+    }
+
+    /**
+     * The tab event interface
+     */
+    public interface OnTabsSelectListener {
+        void onTabSelect(int from, int to);
+    }
+
+    /**
      * The LayoutParams of TabsGroup
      */
     public static class LayoutParams extends MarginLayoutParams {
@@ -118,9 +159,6 @@ public class TabsGroup extends ViewGroup {
         }
     }
 
-    interface ITabsGroup {
-
-    }
 }
 
 
