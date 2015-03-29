@@ -18,6 +18,7 @@ public class TabsGroup extends ViewGroup {
     private int mHSpacing;
     private int mBarColor;
     private int mBarHeight;
+    private OnTabsSelectListener mListener;
 
     public TabsGroup(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -59,6 +60,17 @@ public class TabsGroup extends ViewGroup {
                 continue;
             }
 
+            // set click listener
+            final int childPos = i;
+            child.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mListener != null) {
+                        mListener.onTabSelect(currTab, childPos, v);
+                    }
+                }
+            });
+            // set position
             LayoutParams params = (LayoutParams) child.getLayoutParams();
             params.x = width += params.leftMargin;
             params.y = params.topMargin;
@@ -124,18 +136,22 @@ public class TabsGroup extends ViewGroup {
      */
     public int setCurrentTab(int i) {
         int old = currTab;
-//        if (i > 0 && i <= tabCnt) {
-//            currTab = i;
-//            requestLayout();
-//        }
+        if (i > 0 && i <= tabCnt) {
+            currTab = i;
+            requestLayout();
+        }
         return old;
+    }
+
+    public void setOnTabSelectListener(OnTabsSelectListener listener) {
+        mListener = listener;
     }
 
     /**
      * The tab event interface
      */
     public interface OnTabsSelectListener {
-        void onTabSelect(int from, int to);
+        void onTabSelect(int from, int to, View view);
     }
 
     /**

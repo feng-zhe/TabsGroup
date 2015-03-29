@@ -6,11 +6,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.View;
 
 import gmail.henryzhefeng.library.TabsGroup;
 import gmail.henryzhefeng.tabexample.Fragments.ContentFragment;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements TabsGroup.OnTabsSelectListener {
 
     private ViewPager mPager;
     private TabsGroup mTabs;
@@ -25,6 +26,12 @@ public class MainActivity extends FragmentActivity {
         mPager.setOnPageChangeListener(new MyPageChangeListener());
 
         mTabs = (TabsGroup) findViewById(R.id.tabs);
+        mTabs.setOnTabSelectListener(this);
+    }
+
+    @Override
+    public void onTabSelect(int from, int to, View view) {
+        mPager.setCurrentItem(to - 1);
     }
 
     private class MyPageChangeListener implements ViewPager.OnPageChangeListener {
