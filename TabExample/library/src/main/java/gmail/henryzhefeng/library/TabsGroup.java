@@ -1,5 +1,6 @@
 package gmail.henryzhefeng.library;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -11,14 +12,15 @@ import android.view.ViewGroup;
  */
 public class TabsGroup extends ViewGroup {
 
-    // the bar
-    private View mBar;
-    private int currTab = 1;
+    private View mBar; // the bar
+    private int currTab = 0;
     private int tabCnt;
     private int mHSpacing;
     private int mBarColor;
     private int mBarHeight;
-    private boolean mSmooth;
+    private boolean mSmooth; // indicate whether the bar should move smoothly.
+    private int mXOffset; // the x offset
+    private int mWidthOffset; // the width delta
     private OnTabsSelectListener mListener;
 
     public TabsGroup(Context context, AttributeSet attrs) {
@@ -63,19 +65,20 @@ public class TabsGroup extends ViewGroup {
             }
 
             // set click listener
-            final int childPos = i;
+            final int childPos = i - 1;
             child.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mListener != null) {
-                        mListener.onTabSelect(currTab - 1, childPos - 1, v);
+                        mListener.onTabSelect(currTab, childPos, v);
                     }
                     setCurrentTab(childPos);
                 }
             });
             // set position
             LayoutParams params = (LayoutParams) child.getLayoutParams();
-            params.x = width += params.leftMargin;
+            width += params.leftMargin;
+            params.x = width;
             params.y = params.topMargin;
             // update next view's position
             width += child.getMeasuredWidth() + params.rightMargin + mHSpacing;
@@ -90,11 +93,11 @@ public class TabsGroup extends ViewGroup {
 
         // set the bar
         LayoutParams barParams = (LayoutParams) mBar.getLayoutParams();
-        View tabView = getChildAt(currTab);// the bar itself is the first child, so we don't minus 1.
+        View tabView = getChildAt(currTab + 1);// the bar itself is the first child
         LayoutParams tabParams = (LayoutParams) tabView.getLayoutParams();
-        barParams.x = tabParams.x;
+        barParams.x = tabParams.x + mXOffset;
         barParams.y = height;
-        barParams.width = tabView.getMeasuredWidth();
+        barParams.width = tabView.getMeasuredWidth() + mWidthOffset;
         height += mBar.getMeasuredHeight();
 
         setMeasuredDimension(resolveSize(width, widthMeasureSpec),
@@ -138,10 +141,26 @@ public class TabsGroup extends ViewGroup {
      * @return the previous position.
      */
     public int setCurrentTab(int i) {
-        i++;// inner tab starts from 1;
         int old = currTab;
-        if (i > 0 && i <= tabCnt) {
+        if (i >= 0 && i <= tabCnt) {
             currTab = i;
+            // if smooth is on, the we animate the x offset
+            if (mSmooth) {
+                final int maxOffset = ((LayoutParams) getChildAt(old + 1).getLayoutParams()).x -
+                        ((LayoutParams) getChildAt(i + 1).getLayoutParams()).x;
+                final int widthDelta = getChildAt(old).getMeasuredWidth() - getChildAt(i).getMeasuredWidth();
+                ValueAnimator animator = ValueAnimator.ofInt(0, 1000);
+                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        float frac = animation.getAnimatedFraction();
+                        mXOffset = (int) (maxOffset * (1.0f - frac));
+                        mWidthOffset = (int) (widthDelta * (1.0f - frac));
+                        requestLayout();
+                    }
+                });
+                animator.start();
+            }
             requestLayout();
         }
         return old;
