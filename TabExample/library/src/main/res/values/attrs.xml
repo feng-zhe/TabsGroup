@@ -4,5 +4,6 @@
         <attr name="horizontal_spacing" format="dimension" />
         <attr name="bar_color" format="color" />
         <attr name="bar_height" format="dimension" />
+        <attr name="smooth_mode" format="boolean" />
     </declare-styleable>
 </resources>

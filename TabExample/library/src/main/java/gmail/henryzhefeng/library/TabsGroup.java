@@ -18,6 +18,7 @@ public class TabsGroup extends ViewGroup {
     private int mHSpacing;
     private int mBarColor;
     private int mBarHeight;
+    private boolean mSmooth;
     private OnTabsSelectListener mListener;
 
     public TabsGroup(Context context, AttributeSet attrs) {
@@ -32,6 +33,7 @@ public class TabsGroup extends ViewGroup {
                     getResources().getColor(R.color.default_bar_color));
             mBarHeight = array.getDimensionPixelSize(R.styleable.TabsGroup_bar_height,
                     getResources().getDimensionPixelSize(R.dimen.default_bar_height));
+            mSmooth = array.getBoolean(R.styleable.TabsGroup_smooth_mode, false);
         } finally {
             array.recycle();
         }
@@ -143,6 +145,10 @@ public class TabsGroup extends ViewGroup {
             requestLayout();
         }
         return old;
+    }
+
+    public void setSmoothMode(boolean smooth) {
+        mSmooth = smooth;
     }
 
     public void setOnTabSelectListener(OnTabsSelectListener listener) {
