@@ -66,8 +66,9 @@ public class TabsGroup extends ViewGroup {
                 @Override
                 public void onClick(View v) {
                     if (mListener != null) {
-                        mListener.onTabSelect(currTab, childPos, v);
+                        mListener.onTabSelect(currTab - 1, childPos - 1, v);
                     }
+                    setCurrentTab(childPos);
                 }
             });
             // set position
@@ -129,12 +130,13 @@ public class TabsGroup extends ViewGroup {
     }
 
     /**
-     * Set the current tab index, start from 1.
+     * Set the current tab index.
      *
      * @param i the new position
      * @return the previous position.
      */
     public int setCurrentTab(int i) {
+        i++;// inner tab starts from 1;
         int old = currTab;
         if (i > 0 && i <= tabCnt) {
             currTab = i;
@@ -151,6 +153,7 @@ public class TabsGroup extends ViewGroup {
      * The tab event interface
      */
     public interface OnTabsSelectListener {
+        // index starts from 0.
         void onTabSelect(int from, int to, View view);
     }
 

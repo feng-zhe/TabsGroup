@@ -31,7 +31,7 @@ public class MainActivity extends FragmentActivity implements TabsGroup.OnTabsSe
 
     @Override
     public void onTabSelect(int from, int to, View view) {
-        mPager.setCurrentItem(to - 1);
+        mPager.setCurrentItem(to);
     }
 
     private class MyPageChangeListener implements ViewPager.OnPageChangeListener {
@@ -43,7 +43,7 @@ public class MainActivity extends FragmentActivity implements TabsGroup.OnTabsSe
 
         @Override
         public void onPageSelected(int position) {
-            mTabs.setCurrentTab(position + 1);
+            mTabs.setCurrentTab(position);
         }
 
         @Override
