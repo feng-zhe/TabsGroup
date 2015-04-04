@@ -72,7 +72,6 @@ public class TabsGroup extends ViewGroup {
                     if (mListener != null) {
                         mListener.onTabSelect(currTab, childPos, v);
                     }
-                    setCurrentTab(childPos);
                 }
             });
             // set position
@@ -134,36 +133,52 @@ public class TabsGroup extends ViewGroup {
         return p instanceof LayoutParams;
     }
 
-    /**
-     * Set the current tab index.
-     *
-     * @param i the new position
-     * @return the previous position.
-     */
-    public int setCurrentTab(int i) {
-        int old = currTab;
+//    /**
+//     * Set the current tab index.
+//     *
+//     * @param i the new position
+//     * @return the previous position.
+//     */
+//    public int setCurrentTab(int i) {
+//        int old = currTab;
+//        if (i >= 0 && i <= tabCnt) {
+//            currTab = i;
+//            // if smooth is on, the we animate the x offset
+//            if (mSmooth) {
+//                final int maxOffset = ((LayoutParams) getChildAt(old + 1).getLayoutParams()).x -
+//                        ((LayoutParams) getChildAt(i + 1).getLayoutParams()).x;
+//                final int widthDelta = getChildAt(old).getMeasuredWidth() - getChildAt(i).getMeasuredWidth();
+//                ValueAnimator animator = ValueAnimator.ofInt(0, 1000);
+//                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//                    @Override
+//                    public void onAnimationUpdate(ValueAnimator animation) {
+//                        float frac = animation.getAnimatedFraction();
+//                        mXOffset = (int) (maxOffset * (1.0f - frac));
+//                        mWidthOffset = (int) (widthDelta * (1.0f - frac));
+//                        requestLayout();
+//                    }
+//                });
+//                animator.start();
+//            }
+//            requestLayout();
+//        }
+//        return old;
+//    }
+
+    public void setCurrentTabWithOffset(int i, float offset) {
         if (i >= 0 && i <= tabCnt) {
             currTab = i;
-            // if smooth is on, the we animate the x offset
-            if (mSmooth) {
-                final int maxOffset = ((LayoutParams) getChildAt(old + 1).getLayoutParams()).x -
-                        ((LayoutParams) getChildAt(i + 1).getLayoutParams()).x;
-                final int widthDelta = getChildAt(old).getMeasuredWidth() - getChildAt(i).getMeasuredWidth();
-                ValueAnimator animator = ValueAnimator.ofInt(0, 1000);
-                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        float frac = animation.getAnimatedFraction();
-                        mXOffset = (int) (maxOffset * (1.0f - frac));
-                        mWidthOffset = (int) (widthDelta * (1.0f - frac));
-                        requestLayout();
-                    }
-                });
-                animator.start();
+            if (offset != 0) {
+                final int distance = ((LayoutParams) getChildAt(i + 2).getLayoutParams()).x - ((LayoutParams) getChildAt(i + 1).getLayoutParams()).x;
+                final int widthDelta = getChildAt(i + 2).getMeasuredWidth() - getChildAt(i + 1).getMeasuredWidth();
+                mXOffset = (int) (distance * offset);
+                mWidthOffset = (int) (widthDelta * offset);
+            } else {
+                mXOffset = 0;
+                mWidthOffset = 0;
             }
             requestLayout();
         }
-        return old;
     }
 
     public void setSmoothMode(boolean smooth) {

@@ -38,12 +38,12 @@ public class MainActivity extends FragmentActivity implements TabsGroup.OnTabsSe
 
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            // ignore now
+            mTabs.setCurrentTabWithOffset(position, positionOffset);
         }
 
         @Override
         public void onPageSelected(int position) {
-            mTabs.setCurrentTab(position);
+            // ignored
         }
 
         @Override
