@@ -1,6 +1,5 @@
 package gmail.henryzhefeng.library;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -18,7 +17,6 @@ public class TabsGroup extends ViewGroup {
     private int mHSpacing;
     private int mBarColor;
     private int mBarHeight;
-    private boolean mSmooth; // indicate whether the bar should move smoothly.
     private int mXOffset; // the x offset
     private int mWidthOffset; // the width delta
     private OnTabsSelectListener mListener;
@@ -35,7 +33,6 @@ public class TabsGroup extends ViewGroup {
                     getResources().getColor(R.color.default_bar_color));
             mBarHeight = array.getDimensionPixelSize(R.styleable.TabsGroup_bar_height,
                     getResources().getDimensionPixelSize(R.dimen.default_bar_height));
-            mSmooth = array.getBoolean(R.styleable.TabsGroup_smooth_mode, false);
         } finally {
             array.recycle();
         }
@@ -133,38 +130,6 @@ public class TabsGroup extends ViewGroup {
         return p instanceof LayoutParams;
     }
 
-//    /**
-//     * Set the current tab index.
-//     *
-//     * @param i the new position
-//     * @return the previous position.
-//     */
-//    public int setCurrentTab(int i) {
-//        int old = currTab;
-//        if (i >= 0 && i <= tabCnt) {
-//            currTab = i;
-//            // if smooth is on, the we animate the x offset
-//            if (mSmooth) {
-//                final int maxOffset = ((LayoutParams) getChildAt(old + 1).getLayoutParams()).x -
-//                        ((LayoutParams) getChildAt(i + 1).getLayoutParams()).x;
-//                final int widthDelta = getChildAt(old).getMeasuredWidth() - getChildAt(i).getMeasuredWidth();
-//                ValueAnimator animator = ValueAnimator.ofInt(0, 1000);
-//                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//                    @Override
-//                    public void onAnimationUpdate(ValueAnimator animation) {
-//                        float frac = animation.getAnimatedFraction();
-//                        mXOffset = (int) (maxOffset * (1.0f - frac));
-//                        mWidthOffset = (int) (widthDelta * (1.0f - frac));
-//                        requestLayout();
-//                    }
-//                });
-//                animator.start();
-//            }
-//            requestLayout();
-//        }
-//        return old;
-//    }
-
     public void setCurrentTabWithOffset(int i, float offset) {
         if (i >= 0 && i <= tabCnt) {
             currTab = i;
@@ -179,10 +144,6 @@ public class TabsGroup extends ViewGroup {
             }
             requestLayout();
         }
-    }
-
-    public void setSmoothMode(boolean smooth) {
-        mSmooth = smooth;
     }
 
     public void setOnTabSelectListener(OnTabsSelectListener listener) {
