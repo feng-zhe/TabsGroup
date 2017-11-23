@@ -79,6 +79,3 @@ private class MyPageChangeListener implements ViewPager.OnPageChangeListener {
 
 And if you want to listen the click event, just implement the interface
 <code>TabsGroup.OnTabsSelectListener</code>
-
-
-# If you have any advice or suggestion, please contact me by gmail: henryzhefeng@gmail.com
